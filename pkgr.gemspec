@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
 
   s.add_dependency('rake', '~> 12.2.1') # rake 12.3 requires ruby 2.x
-  s.add_dependency('thor', '~> 0.19')
+  s.add_dependency('thor', '~> 1.5')
   s.add_dependency('fpm', '~> 1.1')
   s.add_dependency('facter', '~> 2.1')
   s.add_dependency('mixlib-log', '~> 1.6')
