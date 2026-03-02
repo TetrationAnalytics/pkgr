@@ -7,6 +7,10 @@ module Pkgr
   module Distributions
     # Contains the various components required to make a packaged app integrate well with a Debian system.
     class Debian < Base
+      def deb?
+        true
+      end
+
       # Only keep major digits
       def release
         @release[/^[0-9]+/]
@@ -14,10 +18,10 @@ module Pkgr
 
       def runner
         @runner ||= case release
-        when /^8/, /^9/, /^10/
-          Runner.new("systemd", "default", "systemctl")
-        else
+        when /^6/, /^7/
           Runner.new("sysv", "lsb-3.1", "update-rc.d")
+        else
+          Runner.new("systemd", "default", "systemctl")
         end
       end
 
@@ -41,7 +45,7 @@ module Pkgr
         Dir.glob(File.join(output_dir, "*deb")).each do |package|
           puts "-----> Verifying package #{File.basename(package)}"
           Dir.mktmpdir do |dir|
-            verify_package = Mixlib::ShellOut.new %{dpkg-deb -x #{package} #{dir}}
+            verify_package = Mixlib::ShellOut.new %{dpkg-deb -x "#{package}" "#{dir}"}
             verify_package.logger = Pkgr.logger
             verify_package.run_command
             verify_package.error!

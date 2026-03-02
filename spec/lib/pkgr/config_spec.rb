@@ -108,6 +108,51 @@ describe Pkgr::Config do
     Pkgr::Config.load_file(fixture("pkgr.yml"), "fedora-20")
   end
 
+  describe "target validation" do
+    it "raises an error when target is not defined in .pkgr.yml" do
+      yml = {}
+      yml["targets"] = {
+        "ubuntu-20.04" => {"dependencies" => ["dep1"]},
+        "debian-10" => {"dependencies" => ["dep2"]}
+      }
+      file = Tempfile.new("config")
+      file.write YAML.dump(yml)
+      file.close
+
+      expect {
+        Pkgr::Config.load_file(file.path, "centos-7")
+      }.to raise_error(Pkgr::Errors::TargetNotDefined, "Target 'centos-7' is not defined in .pkgr.yml. Available targets: ubuntu-20.04, debian-10")
+    end
+
+    it "does not raise an error when target is defined" do
+      yml = {}
+      yml["targets"] = {
+        "ubuntu-20.04" => {"dependencies" => ["dep1"]},
+        "centos-7" => {"dependencies" => ["dep2"]}
+      }
+      file = Tempfile.new("config")
+      file.write YAML.dump(yml)
+      file.close
+
+      expect {
+        config = Pkgr::Config.load_file(file.path, "centos-7")
+        expect(config.dependencies).to eq(["dep2"])
+      }.not_to raise_error
+    end
+
+    it "does not raise an error when no targets are defined" do
+      yml = {"name" => "test-app"}
+      file = Tempfile.new("config")
+      file.write YAML.dump(yml)
+      file.close
+
+      expect {
+        config = Pkgr::Config.load_file(file.path, "any-distro")
+        expect(config.name).to eq("test-app")
+      }.not_to raise_error
+    end
+  end
+
   describe "#after_hook" do
     it "returns the content of the after_precompile option if any" do
       config.after_precompile = "path/to/hook"

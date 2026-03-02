@@ -6,13 +6,21 @@ require 'pkgr/fpm_command'
 module Pkgr
   module Distributions
     class Sles < Base
+      def rpm?
+        true
+      end
+
       # Only keep major digits
       def release
         @release[/^[0-9]+/]
       end
 
       def runner
-        @runner ||= Runner.new("sysv", "lsb-3.1", "chkconfig")
+        @runner ||= if release.to_i > 12
+          Runner.new("systemd", "default", "systemctl")
+        else
+          Runner.new("sysv", "lsb-3.1", "chkconfig")
+        end
       end
 
       def package_test_command(package)
@@ -20,7 +28,12 @@ module Pkgr
       end
 
       def package_install_command(packages)
-        "sudo zypper refresh ; sudo zypper install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
+        # --no-gpg-checks helps with outdated repos for SLES
+        zypper_flags = []
+        if release.to_i <= 12
+          zypper_flags.push("--no-gpg-checks")
+        end
+        "sudo zypper refresh ; sudo zypper #{zypper_flags.join(" ")} install -y #{packages.map{|package| "\"#{package}\""}.join(" ")}"
       end
 
       def installer_dependencies

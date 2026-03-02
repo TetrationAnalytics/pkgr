@@ -29,18 +29,25 @@ They may just work.
 
 ## Supported distributions (64bits only)
 
+* Ubuntu 24.04 ("noble")
+* Ubuntu 22.04 ("jammy")
 * Ubuntu 20.04 ("focal")
 * Ubuntu 18.04 ("bionic")
 * Ubuntu 16.04 ("xenial")
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
+* Debian 13 ("trixie")
+* Debian 12 ("bookworm")
+* Debian 11 ("bullseye")
 * Debian 10 ("buster")
 * Debian 9 ("stretch")
 * Debian 8 ("jessie")
 * Debian 7 ("wheezy")
+* RHEL/CentOS 9
 * RHEL/CentOS 8
 * RHEL/CentOS 7
 * RHEL/CentOS 6
+* Suse Linux Enterprise Server 15
 * Suse Linux Enterprise Server 12
 * Suse Linux Enterprise Server 11
 * Amazon Linux AMI 2015
@@ -204,7 +211,7 @@ Issue getting nokogiri to compile? Try the following based on this [comment](htt
 
 ## Authors
 
-* Cyril Rohr <cyril.rohr@gmail.com> - <http://crohr.me>, <https://packager.io>
+* Cyril Rohr <https://cyrilrohr.com>. Other projects: [RunsOn - 10x cheaper GitHub Actions runners](https://runs-on.com), [PullPreview - Preview environments made simple](https://pullpreview.com).
 
 ## Copyright
 

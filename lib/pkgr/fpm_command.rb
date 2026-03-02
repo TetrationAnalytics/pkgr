@@ -38,7 +38,9 @@ module Pkgr
       list << "--before-remove" << distribution.preuninstall_file
       list << "--after-remove" << distribution.postuninstall_file
       list << "--directories" << config.directories unless config.directories.nil?
+      list << "--rpm-digest" << "sha256" if distribution.rpm?
       distribution.dependencies(config.dependencies).each{|d| list << "-d" << d}
+      distribution.config_files.each{|f| list << "--config-files" << f}
       list.compact
     end
   end

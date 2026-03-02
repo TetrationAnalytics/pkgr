@@ -22,17 +22,21 @@ module Pkgr
         self.class.name.split("::")[-1].downcase
       end # def os
 
+      def rpm?
+        false
+      end
+
+      def deb?
+        false
+      end
+
       # e.g. ubuntu-12.04
       def slug
         [os, release].join("-")
       end # def slug
 
       def target
-        {
-          "centos-6" => "el:6",
-          "centos-7" => "el:7",
-          "centos-8" => "el:8"
-        }.fetch(slug, slug.sub("-", ":"))
+        slug.sub("-", ":").sub("centos", "el")
       end
 
       def package_test_command(package)
@@ -121,6 +125,13 @@ module Pkgr
         end
 
         list
+      end
+
+      def config_files
+        templates
+          .filter { |template| template.is_a?(Templates::FileTemplate) }
+          .map(&:target)
+          .filter { |target| target.start_with?("etc/") }
       end
 
       # Returns a list of <Process, FileTemplate> tuples.

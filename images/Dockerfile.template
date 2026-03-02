@@ -1,0 +1,11 @@
+ARG TARGET
+FROM barebuild/$TARGET
+ARG PKGR_VERSION
+
+VOLUME ["/pkgr/cache", "/pkgr/output", "/pkgr/app"]
+WORKDIR /pkgr/output
+
+RUN curl -GLs https://buildcurl.com -d recipe=pkgr -d version="$PKGR_VERSION" -d target="$TARGET" -o - | tar xzf - -C /usr/local
+# Trust all directories in the build context
+RUN git config --global --add safe.directory '*'
+ENTRYPOINT ["/usr/local/bin/pkgr", "package", "/pkgr/app", "--clean", "--auto", "--compile-cache-dir", "/pkgr/cache"]

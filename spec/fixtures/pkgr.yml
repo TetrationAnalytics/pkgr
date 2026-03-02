@@ -13,6 +13,7 @@ targets:
       - mysql-server
       - git-core
   ubuntu-10.04: *squeeze
+  ubuntu-12.04: *squeeze
   centos-6: true
   fedora-20: false
   debian-7:

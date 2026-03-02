@@ -27,6 +27,12 @@ module Pkgr
           end
         end
 
+        # Check if targets are defined but current target is not
+        if !targets.empty? && !targets.has_key?(distribution.to_s)
+          available_targets = targets.keys.join(", ")
+          raise Pkgr::Errors::TargetNotDefined, "Target '#{distribution}' is not defined in .pkgr.yml. Available targets: #{available_targets}"
+        end
+
         distro_config = targets[distribution.to_s]
         if distro_config.is_a?(Hash)
           distro_config.each do |k,v|
@@ -133,11 +139,16 @@ module Pkgr
     end
 
     def env
-      @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
+      @env ||= @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
     end
 
     def buildpacks
       @table[:buildpack].is_a?(String) ? @table[:buildpack].split(",") : @table[:buildpack]
+    end
+
+    def name
+      # handle GITHUB_REPOSITORY-like names
+      (@table[:name] || "").split("/").last
     end
 
     def valid?

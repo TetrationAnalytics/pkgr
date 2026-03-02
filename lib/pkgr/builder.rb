@@ -45,7 +45,7 @@ module Pkgr
         opts[:input] = $stdin.read
       end
 
-      tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} -C #{source_dir}", opts)
+      tarball_extract = Mixlib::ShellOut.new("tar xzf #{tarball} --no-same-owner -C #{source_dir}", opts)
       tarball_extract.logger = Pkgr.logger
       tarball_extract.run_command
       tarball_extract.error!
@@ -69,6 +69,8 @@ module Pkgr
       end
       config.distribution = distribution
       config.env.variables.push("TARGET=#{distribution.target}")
+      config.env.variables.push("APP_PKG_VERSION=#{config.version}")
+      config.env.variables.push("APP_PKG_ITERATION=#{config.iteration}")
       # useful for templates that need to read files
       config.source_dir = source_dir
       config.build_dir = build_dir
@@ -166,6 +168,7 @@ module Pkgr
     # Write cron files
     def setup_crons
       crons_dir = File.join("/", distribution.crons_dir)
+      config.crons_dir = crons_dir
 
       config.crons.map! do |cron_path|
         Cron.new(File.expand_path(cron_path, config.home), File.join(crons_dir, File.basename(cron_path)))
